@@ -1,11 +1,7 @@
 package pl.piomin.services.order;
 
-import java.time.LocalDateTime;
-import java.util.logging.Logger;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.sleuth.sampler.AlwaysSampler;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
@@ -13,13 +9,10 @@ import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.messaging.support.GenericMessage;
+import pl.piomin.service.common.message.*;
 
-import pl.piomin.service.common.message.Order;
-import pl.piomin.service.common.message.OrderStatus;
-import pl.piomin.service.common.message.OrderType;
-import pl.piomin.service.common.message.Product;
-import pl.piomin.service.common.message.Shipment;
-import pl.piomin.service.common.message.ShipmentType;
+import java.time.LocalDateTime;
+import java.util.logging.Logger;
 
 
 @SpringBootApplication
@@ -43,10 +36,5 @@ public class Application {
 			return new GenericMessage<>(o); 
 		};
 	}
-	
-	@Bean
-	public AlwaysSampler defaultSampler() {
-	  return new AlwaysSampler();
-	}
-	
+
 }

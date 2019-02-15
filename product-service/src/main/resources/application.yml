@@ -15,10 +15,13 @@ spring:
           environment:
             spring:
               rabbitmq:
-                host: 192.168.99.100
+                host: broker-host
                 port: 30000
                 username: guest
                 password: guest
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
                 
 server:  
   port: ${PORT:2223}
