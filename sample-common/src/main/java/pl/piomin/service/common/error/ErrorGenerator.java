@@ -4,7 +4,11 @@ import java.util.Random;
 
 public class ErrorGenerator {
 
-    private Random random = new Random();
+    public ErrorGenerator(Random random) {
+        this.random = random;
+    }
+
+    private Random random;
 
     public void sometimesGenerateErrorFor(Object o) {
         if (random.nextBoolean()) {

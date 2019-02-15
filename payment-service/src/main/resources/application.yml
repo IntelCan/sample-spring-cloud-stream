@@ -1,11 +1,20 @@
 spring:
   cloud:
     stream:
+      rabbit:
+        bindings:
+          input:
+            consumer:
+              auto-bind-dlq: true
+              dlq-dead-letter-exchange:
+              dlq-ttl: 10000
       bindings:
         input:
           destination: ex.stream.out2
           group: payment
           binder: rabbit1
+          consumer:
+            max-attempts: 1
         output:
           destination: ex.stream.out2
           binder: rabbit1
