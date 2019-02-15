@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Sink;
+import pl.piomin.service.common.error.ErrorGenerator;
 import pl.piomin.service.common.message.Order;
 
 import java.util.logging.Logger;
@@ -17,6 +18,9 @@ public class Application {
 	@Autowired
 	private PaymentService paymentService;
 
+	@Autowired
+	private ErrorGenerator errorGenerator;
+
 	protected Logger logger = Logger.getLogger(Application.class.getName());
 
 	public static void main(String[] args) {
@@ -27,6 +31,7 @@ public class Application {
 	public void processOrder(Order order) {
 		logger.info("Processing order: " + order);
 		Order o = paymentService.processOrder(order);
+		errorGenerator.sometimesGenerateErrorFor(order);
 		if (o != null)
 			logger.info("Final response: " + (o.getProduct().getPrice() + o.getShipment().getPrice()));
 	}
