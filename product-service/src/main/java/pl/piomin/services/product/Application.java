@@ -4,33 +4,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Processor;
-import org.springframework.messaging.handler.annotation.SendTo;
-import pl.piomin.service.common.message.Order;
+import org.springframework.cloud.stream.messaging.Sink;
+import org.springframework.cloud.stream.messaging.Source;
+import org.springframework.context.annotation.Bean;
+import org.springframework.integration.annotation.InboundChannelAdapter;
+import org.springframework.integration.annotation.Poller;
+import org.springframework.integration.core.MessageSource;
+import org.springframework.messaging.support.GenericMessage;
+import pl.piomin.service.common.message.*;
 
+import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 @SpringBootApplication
-@EnableBinding(Processor.class)
+@EnableBinding(Source.class)
 public class Application {
 
-	@Autowired
-	private ProductService productService;
-	
-	protected Logger logger = Logger.getLogger(Application.class.getName());
+    @Autowired
+    private ProductService productService;
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    private int index = 0;
 
-	@StreamListener(Processor.INPUT)
-	@SendTo(Processor.OUTPUT)
-	public Order processOrder(Order order) {
-		logger.info("Processing order: " + order);
-		order.setProduct(productService.processOrder(order));
-		logger.info("Output order: " + order);
-		return order;
-	}
+    protected Logger logger = Logger.getLogger(Application.class.getName());
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Bean
+    @InboundChannelAdapter(value = Source.OUTPUT, poller = @Poller(fixedDelay = "10000", maxMessagesPerPoll = "1"))
+    public MessageSource processOrder() {
+        return () -> {
+            Order order = new Order(index++, OrderType.PURCHASE, LocalDateTime.now(), OrderStatus.NEW, new Product("Example#2"), new Shipment(ShipmentType.SHIP));
+            productService.processOrder(order);
+            logger.info("Sending order: " + order);
+            return new GenericMessage<>(order);
+        };
+    }
 
 }

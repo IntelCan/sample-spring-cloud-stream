@@ -4,10 +4,10 @@ spring:
       bindings:
         input:
           destination: ex.stream.out
-          group: product
           binder: rabbit1
         output:
           destination: ex.stream.out2
+          group: product
           binder: rabbit1
       binders:
         rabbit1:
